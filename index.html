@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+<title>Setlist 2 รอบ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@600;700&family=Anuphan:wght@400;500;600&family=JetBrains+Mono:wght@600;700&display=swap">
+</head><body>
+<style id="css">
+/* Layout: round tabs → title → legend → tempo-flow bars → song cards (tap = click track, drag ⠿ = reorder, saved at once); "ย้ายข้ามรอบ" mode shows both rounds as drag lists */
+:root{
+  --bg:#EEECE7; --card:#FFFFFF; --line:#DCD8CF; --fg:#1C1B18; --muted:#6C685F;
+  --tab:#D6AE33; --tab-fg:#1C1B18;
+  --slow:#3E6FCB; --mid:#47885A; --fast:#C64D33;
+  --king:#4A47B8; --mos:#B4482A;
+  --display:"Bai Jamjuree","Anuphan",sans-serif; --body:"Anuphan",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#191815; --card:#24221E; --line:#38352F; --fg:#EFECE5; --muted:#A39E93;
+  --tab:#C9A12E; --tab-fg:#191815;
+  --slow:#7EA2EA; --mid:#7FBF8E; --fast:#EA846B; --king:#9C98F0; --mos:#EA8F72; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#191815; --card:#24221E; --line:#38352F; --fg:#EFECE5; --muted:#A39E93;
+  --tab:#C9A12E; --tab-fg:#191815;
+  --slow:#7EA2EA; --mid:#7FBF8E; --fast:#EA846B; --king:#9C98F0; --mos:#EA8F72; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45}
+.wrap{max-width:780px;margin:0 auto;padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.tab{appearance:none;text-align:left;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:10px;padding:10px 12px;cursor:pointer;font:inherit;min-width:0}
+.tab b{display:block;font-family:var(--display);font-size:17px}
+.tab span{font-size:12px;color:var(--muted)}
+.tab[aria-selected="true"]{background:var(--tab);border-color:var(--tab);color:var(--tab-fg)}
+.tab[aria-selected="true"] span{color:var(--tab-fg);opacity:.8}
+button:focus-visible{outline:2px solid var(--slow);outline-offset:2px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,6vw,38px);line-height:1.15;margin:20px 0 4px;text-wrap:balance}
+.sub{margin:0;font-size:14px;color:var(--muted)}
+.sub b{color:var(--fg)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--muted);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.sq{width:10px;height:10px;border-radius:2px;display:inline-block}
+.flow{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 12px 8px;margin-top:18px}
+.flow .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted)}
+.bars{display:flex;align-items:flex-end;gap:4px;height:96px;margin-top:8px}
+.col{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.col .v{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:2px}
+.col .b{width:100%;border-radius:3px 3px 0 0}
+.nums{display:flex;gap:4px;margin-top:3px}
+.nums span{flex:1;text-align:center;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;margin:16px 0 12px}
+.hint{font-size:13px;color:var(--muted);margin:0}
+.btn{appearance:none;font:inherit;font-size:14px;font-weight:600;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:6px 14px;cursor:pointer}
+.btn.primary{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.btn:disabled{opacity:.5;cursor:default}
+.list{display:flex;flex-direction:column;gap:8px}
+.song{appearance:none;font:inherit;color:inherit;text-align:left;width:100%;display:grid;grid-template-columns:28px 26px 1fr auto;gap:8px;align-items:center;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;padding:10px 14px 10px 4px;cursor:pointer}
+.song .grip{cursor:grab;touch-action:none;font-size:20px;line-height:1;color:var(--muted);text-align:center;padding:10px 0;user-select:none;-webkit-user-select:none}
+.song .grip:active{cursor:grabbing}
+.song.on{box-shadow:0 0 0 2px var(--c)}
+.song .no{font-family:var(--display);font-size:18px;color:var(--muted);text-align:center}
+.song .t{min-width:0}
+.song .name{font-family:var(--display);font-weight:700;font-size:18px;line-height:1.25}
+.song .meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;font-size:13px;color:var(--muted);margin-top:3px}
+.pill{font-size:11px;font-weight:600;border:1px solid;border-radius:999px;padding:0 8px;line-height:18px}
+.pill.k{color:var(--king)} .pill.m{color:var(--mos)}
+.pill.n{color:var(--muted);border-style:dashed}
+.note{font-size:12px;color:var(--muted)}
+.bpm{text-align:right;color:var(--c)}
+.bpm .v{font-family:var(--mono);font-weight:700;font-size:26px;line-height:1;font-variant-numeric:tabular-nums}
+.bpm .u{display:block;font-size:10px;color:var(--muted);margin-top:2px}
+.song.on .bpm .v{animation:pulse var(--beat) infinite}
+@keyframes pulse{0%{opacity:1}40%{opacity:.35}100%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.song.on .bpm .v{animation:none}}
+.foot{display:flex;flex-wrap:wrap;gap:4px 16px;border-top:1px solid var(--line);margin-top:18px;padding-top:12px;font-size:13px;color:var(--muted)}
+.warn{color:var(--fast)}
+.src{font-size:12px;color:var(--muted);margin-top:10px}
+.song{grid-template-columns:28px 26px 1fr auto auto}
+.song:focus-visible{outline:2px solid var(--slow);outline-offset:2px}
+.chb{appearance:none;font:inherit;font-size:12px;font-weight:600;border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:8px;padding:6px 8px;cursor:pointer;white-space:nowrap;min-width:52px;text-align:center}
+.chb.has{border-color:var(--fg)}
+.chb small{display:block;font-size:10px;font-weight:400;color:var(--muted)}
+dialog.cd{width:min(680px,calc(100% - 24px));max-height:calc(100% - 24px);border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--fg);padding:0;display:none;flex-direction:column}
+dialog.cd[open]{display:flex}
+dialog.cd::backdrop{background:rgba(0,0,0,.55)}
+.cd-h{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:14px 16px 10px;border-bottom:1px solid var(--line)}
+.cd-h h2{font-family:var(--display);font-size:20px;margin:0;line-height:1.2}
+.cd-h p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.cd-x{appearance:none;border:0;background:transparent;color:var(--muted);font-size:24px;line-height:1;cursor:pointer;padding:2px 6px}
+.cd-k{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line)}
+.cd-k .lab{font-size:13px;color:var(--muted)}
+.cd-k .key{font-family:var(--mono);font-weight:700;font-size:22px;min-width:56px;text-align:center}
+.cd-k .off{font-family:var(--mono);font-size:12px;color:var(--muted);min-width:34px}
+.tp{appearance:none;font:inherit;font-size:20px;font-weight:700;width:40px;height:36px;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:10px;cursor:pointer}
+.cd-b{padding:12px 16px 16px;overflow:auto;flex:1;min-height:120px}
+.sheet{font-family:var(--mono),"Anuphan",monospace;font-size:15px;line-height:1.6;white-space:pre;margin:0;overflow-x:auto}
+.sheet .ch{color:var(--slow);font-weight:700}
+.cd-empty{font-size:14px;color:var(--muted)}
+.cd-empty .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.cd-b textarea{width:100%;min-height:260px;font-family:var(--mono),"Anuphan",monospace;font-size:14px;line-height:1.5;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);padding:10px;resize:vertical}
+.cd-f{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;padding:10px 16px;border-top:1px solid var(--line)}
+.cd-f:empty{display:none}
+.cd-f .grp{display:flex;gap:8px}
+a.btn{text-decoration:none;display:inline-block}
+@media (max-width:420px){.chb{min-width:44px;padding:5px 6px}.song{gap:6px}}
+/* edit mode */
+.editbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.editbar .msg{font-size:13px;color:var(--muted);min-width:0}
+.editbar .acts{display:flex;gap:8px}
+.eround{margin-top:18px}
+.eround h2{font-family:var(--display);font-size:20px;margin:0 0 4px}
+.eround .est{font-size:13px;color:var(--muted);margin-bottom:8px}
+.elist{display:flex;flex-direction:column;gap:6px;min-height:56px;padding:4px;border:1px dashed var(--line);border-radius:12px}
+.erow{display:grid;grid-template-columns:34px 26px 1fr auto auto;gap:8px;align-items:center;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;padding:6px 8px 6px 4px}
+.erow .grip{cursor:grab;touch-action:none;font-size:20px;line-height:1;color:var(--muted);text-align:center;padding:8px 0;user-select:none}
+.erow .no{font-family:var(--mono);font-size:13px;color:var(--muted);text-align:right}
+.erow .name{font-weight:600;font-size:15px;line-height:1.25;min-width:0}
+.erow .name small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+.erow .b{font-family:var(--mono);font-weight:700;color:var(--c);font-size:16px}
+.erow .mv{appearance:none;font:inherit;font-size:12px;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:8px;padding:4px 8px;cursor:pointer;white-space:nowrap}
+.sortable-ghost{opacity:.35}
+.sortable-chosen{box-shadow:0 4px 14px rgba(0,0,0,.18)}
+@media (max-width:420px){.song .name{font-size:16px}.bpm .v{font-size:22px}.col .v{font-size:8px}}
+</style>
+<div class="wrap" id="root"></div>
+<dialog class="cd" id="cd" aria-labelledby="cdTitle">
+  <div class="cd-h"><div><h2 id="cdTitle"></h2><p id="cdSub"></p></div><button class="cd-x" id="cdClose" type="button" aria-label="ปิด">×</button></div>
+  <div class="cd-k" id="cdKey"><span class="lab">คีย์</span><button class="tp" id="tpDown" type="button" aria-label="ลดคีย์ครึ่งเสียง">−</button><span class="key" id="keyName">–</span><button class="tp" id="tpUp" type="button" aria-label="เพิ่มคีย์ครึ่งเสียง">+</button><span class="off" id="keyOff"></span><button class="btn" id="tpReset" type="button">คีย์เดิม</button></div>
+  <div class="cd-b" id="cdBody"></div>
+  <div class="cd-f" id="cdFoot"></div>
+</dialog>
+<script type="application/json" id="state">{"rounds":[{"name":"รอบ 1","time":"18:15–19:00","mins":45,"songs":[["คุกเข่า","Cocktail",128,"m"],["ขี้หึง","Silly Fools",116,"k"],["9 นาฬิกา","SPF",110,"m"],["ฝากที","Tattoo Colour",118,"k"],["โปรดส่งใครมารักฉันที","Instinct",104,"m"],["รักเธอหัวทิ่มบ่อ","Hangman",100,"k"],["รักสนุก","Flame",100,"","ยังไม่ระบุคนร้อง",{"n":1}],["เล่นของสูง","Big Ass",96,"k"],["แพ้ทาง","Labanoon",97,"","ยังไม่ระบุคนร้อง",{"n":1}],["สักวันฉันจะดีพอ","Bodyslam",126,"m"],["ก่อนตาย","Big Ass",172,"k"]]},{"name":"รอบ 2","time":"20:30–22:00","mins":90,"songs":[["ห้ามใจ","Bodyslam",178,"k","คิงหลัก",{"half":89}],["จิ๊จ๊ะ","Silly Fools",128,"k"],["กระเป๋าแบนแฟนยิ้ม","The Richman Toy",150,"m"],["ไม่สมศักดิ์ศรี","ไท ธนาวุฒิ",162,"","ยังไม่ระบุคนร้อง",{"n":1,"half":81}],["อ๊อดๆ","The Richman Toy",130,"m"],["191","Labanoon",136,"","ยังไม่ระบุคนร้อง",{"n":1}],["ยาม","Labanoon",131,"","ยังไม่ระบุคนร้อง",{"n":1}],["ดีแต่ปาก","Big Ass",102,"k"],["ซมซาน","Loso",114,"","ยังไม่ระบุคนร้อง",{"n":1}],["นิดหน่อย","Joey Phuwasit",102,"","ยังไม่ระบุคนร้อง",{"n":1}],["กล้าพอไหม","Potato",78,"k"],["กลัวว่าฉันจะไม่เสียใจ","Purpeech",134,"m"],["ยินดีที่ไม่รู้จัก","25hours",135,"m"],["คิดฮอด","Bodyslam",108,"","ยังไม่ระบุคนร้อง"],["สัญญาเดือนหก","Joey Phuwasit",102,"","ยังไม่ระบุคนร้อง",{"n":1}],["รสชาติชีวิต","Little John",135,"m"],["จันทร์เจ้า","Slot Machine",111,"m"],["โคโยตี้","TaitosmitH",150,"m"],["เจ็บจุงเบย","คาวบอย",157,"k"],["จั๊กกิ้มกับต๊กโต","วงต๊กโต อาร์ สยาม",160,"k"],["วัดใจ","Silly Fools",160,"k"],["รักไม่ช่วยอะไร","Zamzenlazer (cover)",182,"k"],["ยาพิษ","Bodyslam",175,"km","คิงหลัก · มอสเสริม"]]}]}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script id="app">
+// song tuple: [title, artist, bpm, singers(k/m), roleNote, extra:{n:new, half}]
+const STATE=JSON.parse(document.getElementById("state").textContent);
+let ROUNDS=STATE.rounds;
+const ORDER_KEY="setlist-order-v1";
+try{const saved=JSON.parse(localStorage.getItem(ORDER_KEY));
+  const all=r=>r.flatMap(x=>x.songs.map(s=>s[0])).sort().join("|");
+  if(Array.isArray(saved)&&saved.length===ROUNDS.length&&all(saved)===all(ROUNDS))ROUNDS=saved;}catch(e){}
+function saveLocal(rounds){try{localStorage.setItem(ORDER_KEY,JSON.stringify(rounds));return true}catch(e){return false}}
+const MIN_PER_SONG=4;
+const tier=b=>b<=100?"slow":b>=140?"fast":"mid";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const root=document.getElementById("root");
+let cur=0; try{const s=+localStorage.getItem("set2-tab");if(s>=0&&s<ROUNDS.length)cur=s}catch(e){}
+let mainSort=null;
+let editing=false, draft=null, art=null, readOnly=false, saving=false;
+
+root.innerHTML=`
+<div id="view">
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <h1>เซ็ตลิสต์ 2 รอบ</h1>
+  <p class="sub" id="sub"></p>
+  <div class="legend">
+    <span><i class="sq" style="background:var(--slow)"></i>ช้า ≤100</span>
+    <span><i class="sq" style="background:var(--mid)"></i>กลาง 101–139</span>
+    <span><i class="sq" style="background:var(--fast)"></i>เร็ว ≥140</span>
+    <span><span class="pill n">ใหม่</span> เพลงที่เพิ่มเข้ามางานนี้</span>
+  </div>
+  <div class="flow"><div class="lbl">TEMPO FLOW (BPM ตามลำดับเพลง)</div><div class="bars" id="bars"></div><div class="nums" id="nums"></div></div>
+  <div class="toolbar"><p class="hint">แตะเพลงเพื่อเปิด click ตาม BPM · ลาก ⠿ เพื่อสลับลำดับ</p><span style="display:flex;gap:8px"><button class="btn" id="resetBtn" type="button">คืนลำดับเดิม</button><button class="btn" id="editBtn" type="button" hidden>ย้ายข้ามรอบ</button></span></div>
+  <div class="list" id="list"></div>
+  <p class="hint" id="saveMsg" aria-live="polite" style="margin-top:8px"></p>
+  <div class="foot" id="foot"></div>
+  <p class="src">เวลาประมาณจากเฉลี่ยเพลงละ 4 นาที · BPM เพลงใหม่จาก SongBPM / Shazam</p>
+</div>
+<div id="edit" hidden>
+  <div class="editbar"><span class="msg" id="emsg">ลาก ⠿ เพื่อสลับลำดับ · ลากข้ามรอบ หรือกดปุ่มย้ายรอบ</span>
+    <span class="acts"><button class="btn" id="cancelBtn" type="button">ยกเลิก</button><button class="btn primary" id="saveBtn" type="button">บันทึก</button></span></div>
+  <div id="erounds"></div>
+</div>`;
+
+const tabs=document.getElementById("tabs");
+function renderTabs(){
+  tabs.innerHTML=ROUNDS.map((r,i)=>`<button class="tab" role="tab" id="tab${i}" aria-selected="${i===cur}"><b>${esc(r.name)} · ${esc(r.time)}</b><span>${r.songs.length} เพลง · ${r.mins} นาที</span></button>`).join("");
+  tabs.querySelectorAll(".tab").forEach((el,i)=>el.onclick=()=>{cur=i;try{localStorage.setItem("set2-tab",i)}catch(e){}stop();render()});
+}
+function estLine(R){const est=R.songs.length*MIN_PER_SONG;return {est,over:est>R.mins}}
+
+function render(){
+  renderTabs();
+  const R=ROUNDS[cur], songs=R.songs, bpms=songs.map(s=>s[2]);
+  const avg=songs.length?Math.round(bpms.reduce((a,b)=>a+b,0)/bpms.length):0;
+  document.getElementById("sub").innerHTML=`<b>${esc(R.name)}</b> · ${esc(R.time)} · <b>${songs.length}</b> เพลง`;
+  document.getElementById("bars").innerHTML=songs.map(s=>`<div class="col"><span class="v">${s[2]}</span><div class="b" style="height:${Math.round(s[2]/190*78)}px;background:var(--${tier(s[2])})" title="${esc(s[0])} ${s[2]}"></div></div>`).join("");
+  document.getElementById("nums").innerHTML=songs.map((_,i)=>`<span>${i+1}</span>`).join("");
+  document.getElementById("list").innerHTML=songs.map(([t,a,b,who,role,x={}],i)=>{
+    const pills=(who.includes("k")?'<span class="pill k">คิง</span>':"")+(who.includes("m")?'<span class="pill m">มอส</span>':"");
+    const ck=chordInfo(t);
+    return `<div class="song" role="button" tabindex="0" data-i="${i}" style="--c:var(--${tier(b)});--beat:${(60/b).toFixed(3)}s">
+      <span class="grip" aria-hidden="true">⠿</span><span class="no">${i+1}</span>
+      <span class="t"><span class="name">${esc(t)}</span>
+        <span class="meta"><span>${esc(a)}</span>${pills}${role?`<span class="note">${esc(role)}</span>`:""}${x.n?'<span class="pill n">ใหม่</span>':""}</span></span>
+      <span class="bpm"><span class="v">${b}</span><span class="u">BPM${x.half?` · ½ = ${x.half}`:""}</span></span>
+      <button class="chb${ck.text?" has":""}" type="button" data-i="${i}" aria-label="ดูคอร์ด ${esc(t)}">คอร์ด<small>${ck.text?esc(ck.key||"–"):"เพิ่ม"}</small></button>
+    </div>`}).join("");
+  document.querySelectorAll(".song").forEach(el=>{
+    el.onclick=e=>{if(e.target.closest(".grip,.chb"))return;toggle(+el.dataset.i,el)};
+    el.onkeydown=e=>{if(e.target!==el)return;if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle(+el.dataset.i,el)}};
+  });
+  document.querySelectorAll(".chb").forEach(b=>b.onclick=()=>openChords(+b.dataset.i));
+  if(mainSort){mainSort.destroy();mainSort=null}
+  if(window.Sortable)mainSort=Sortable.create(document.getElementById("list"),{handle:".grip",animation:150,onStart:stop,onEnd:e=>{
+    if(e.oldIndex===e.newIndex)return;
+    const next=JSON.parse(JSON.stringify(ROUNDS));const [s]=next[cur].songs.splice(e.oldIndex,1);next[cur].songs.splice(e.newIndex,0,s);
+    ROUNDS=next;render();saveOrder(next);
+  }});
+  const k=songs.filter(s=>s[3].includes("k")).length, m=songs.filter(s=>s[3].includes("m")).length, u=songs.filter(s=>!s[3]).length;
+  const {est,over}=estLine(R);
+  document.getElementById("foot").innerHTML=`<span>คิงร้อง ${k}</span><span>มอสร้อง ${m}</span>${u?`<span>ยังไม่ระบุ ${u}</span>`:""}<span>BPM เฉลี่ย ${avg}</span><span class="${over?"warn":""}">เวลาประมาณ ~${est} นาที จาก ${R.mins}</span>`;
+}
+
+// ---- reorder mode ----
+let sortables=[];
+function renderEdit(){
+  sortables.forEach(s=>s.destroy());sortables=[];
+  const box=document.getElementById("erounds");
+  box.innerHTML=draft.map((R,ri)=>{const {est,over}=estLine(R);return `<section class="eround"><h2>${esc(R.name)} · ${esc(R.time)}</h2>
+    <div class="est ${over?"warn":""}">${R.songs.length} เพลง · ~${est} นาที จาก ${R.mins}</div>
+    <div class="elist" data-r="${ri}">${R.songs.map((s,i)=>`<div class="erow" data-key="${esc(s[0])}" style="--c:var(--${tier(s[2])})">
+      <span class="grip" aria-hidden="true">⠿</span><span class="no">${i+1}</span>
+      <span class="name">${esc(s[0])}<small>${esc(s[1])}</small></span><span class="b">${s[2]}</span>
+      <button class="mv" type="button" data-r="${ri}" data-i="${i}">→ ${esc(draft[1-ri].name)}</button></div>`).join("")}</div></section>`}).join("");
+  box.querySelectorAll(".mv").forEach(b=>b.onclick=()=>{const r=+b.dataset.r,i=+b.dataset.i;const [s]=draft[r].songs.splice(i,1);draft[1-r].songs.push(s);renderEdit()});
+  if(window.Sortable){
+    box.querySelectorAll(".elist").forEach(el=>sortables.push(Sortable.create(el,{group:"set",handle:".grip",animation:150,onEnd:syncFromDom})));
+  }else{
+    document.getElementById("emsg").textContent="โหลดตัวลากไม่สำเร็จ ใช้ปุ่มย้ายรอบได้อย่างเดียว";
+  }
+}
+function syncFromDom(){
+  const lookup={};draft.forEach(R=>R.songs.forEach(s=>lookup[s[0]]=s));
+  document.querySelectorAll("#erounds .elist").forEach(el=>{draft[+el.dataset.r].songs=[...el.querySelectorAll(".erow")].map(r=>lookup[r.dataset.key])});
+  renderEdit();
+}
+function openEdit(){stop();editing=true;draft=JSON.parse(JSON.stringify(ROUNDS));document.getElementById("view").hidden=true;document.getElementById("edit").hidden=false;renderEdit();window.scrollTo(0,0)}
+function closeEdit(){editing=false;draft=null;sortables.forEach(s=>s.destroy());sortables=[];document.getElementById("edit").hidden=true;document.getElementById("view").hidden=false;render()}
+document.getElementById("editBtn").onclick=openEdit;
+document.getElementById("resetBtn").onclick=()=>{if(!confirm("คืนลำดับเพลงเป็นแบบเดิม?"))return;try{localStorage.removeItem(ORDER_KEY)}catch(e){}stop();ROUNDS=STATE.rounds;render();document.getElementById("saveMsg").textContent="คืนลำดับเดิมแล้ว"};
+document.getElementById("cancelBtn").onclick=closeEdit;
+document.getElementById("saveBtn").onclick=async()=>{
+  if(saving)return;
+  const msg=document.getElementById("emsg"), btn=document.getElementById("saveBtn");
+  if(!art){ROUNDS=draft;saveLocal(draft);closeEdit();return}
+  saving=true;btn.disabled=true;msg.textContent="กำลังบันทึก…";
+  try{
+    await art.publish(pageSource({rounds:draft}));
+    msg.textContent="บันทึกแล้ว กำลังโหลดลำดับใหม่…";
+  }catch(e){
+    saving=false;btn.disabled=false;
+    const c=e&&e.code;
+    if(c==="conflict"){msg.textContent="มีคนบันทึกลำดับอื่นก่อน กำลังโหลดเวอร์ชันล่าสุด…";return}
+    if(c==="not_writer"||c==="not_granted"||c==="not_declared"||c==="consent_required"||c==="capability_disabled"||c==="capability_removed"){
+      readOnly=true;ROUNDS=draft;closeEdit();
+      const eb=document.getElementById("editBtn");eb.textContent="ย้ายข้ามรอบ (ดูอย่างเดียว)";
+      document.getElementById("saveMsg").textContent="ลิงก์นี้ดูได้อย่างเดียว ลำดับที่จัดจะเห็นแค่ในเครื่องนี้ ไม่ถูกบันทึก";
+      return;
+    }
+    if(c==="rate_limited"){msg.textContent="บันทึกถี่เกินไป รอสักครู่แล้วกดบันทึกอีกครั้ง";return}
+    msg.textContent="บันทึกไม่สำเร็จ ลองกดบันทึกอีกครั้ง";
+  }
+};
+
+async function saveOrder(rounds){
+  const m=document.getElementById("saveMsg");
+  if(!art||readOnly){m.textContent=saveLocal(rounds)?"บันทึกลำดับในเครื่องนี้แล้ว":"บันทึกไม่ได้ (เบราว์เซอร์ปิดการเก็บข้อมูล) ลำดับจะหายเมื่อรีเฟรช";return}
+  if(saving)return; saving=true; m.textContent="กำลังบันทึกลำดับ…";
+  try{await art.publish(pageSource({rounds}));m.textContent="บันทึกแล้ว"}
+  catch(e){
+    const c=e&&e.code;
+    if(c==="conflict")m.textContent="มีคนบันทึกลำดับอื่นก่อน กำลังโหลดเวอร์ชันล่าสุด…";
+    else if(["not_writer","not_granted","not_declared","consent_required","capability_disabled","capability_removed"].includes(c)){readOnly=true;m.textContent="ลิงก์นี้ดูได้อย่างเดียว ลำดับที่จัดจะเห็นแค่ในหน้านี้ ไม่ถูกบันทึก"}
+    else if(c==="rate_limited")m.textContent="บันทึกถี่เกินไป รอสักครู่แล้วลากอีกครั้ง";
+    else m.textContent="บันทึกไม่สำเร็จ ลองลากอีกครั้ง";
+  }finally{saving=false}
+}
+const RESET=':root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}';
+const HEAD='<title>Setlist 2 รอบ</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@600;700&family=Anuphan:wght@400;500;600&family=JetBrains+Mono:wght@600;700&display=swap">\n';
+function pageSource(state){
+  return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>'+RESET+'</style></head><body>'
+    +HEAD+'<style id="css">'+document.getElementById("css").textContent+'</style>\n<div class="wrap" id="root"></div>\n'
+    +'<script type="application/json" id="state">'+JSON.stringify(state).replace(/</g,"\\u003c")+'<\/script>\n'
+    +'<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"><\/script>\n'
+    +'<script id="app">'+document.getElementById("app").textContent+'<\/script>\n</body></html>';
+}
+
+// ---- click track ----
+let ctx=null,timer=null,active=-1,next=0,beat=0,period=.5;
+function stop(){clearInterval(timer);timer=null;active=-1;document.querySelectorAll(".song.on").forEach(e=>e.classList.remove("on"))}
+function toggle(i,el){
+  if(active===i){stop();return}
+  stop();
+  try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();ctx.resume&&ctx.resume()}catch(e){ctx=null}
+  active=i;el.classList.add("on");
+  period=60/ROUNDS[cur].songs[i][2];beat=0;
+  if(!ctx)return;
+  next=ctx.currentTime+.05;
+  timer=setInterval(()=>{while(next<ctx.currentTime+.12){click(next,beat%4===0);next+=period;beat++}},25);
+}
+function click(t,acc){
+  const o=ctx.createOscillator(),g=ctx.createGain();
+  o.frequency.value=acc?1500:1000;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.5,t+.002);g.gain.exponentialRampToValueAtTime(.0001,t+.05);
+  o.connect(g).connect(ctx.destination);o.start(t);o.stop(t+.06);
+}
+
+// ---- chords + transpose (stored per song title in this browser) ----
+const CHORD_KEY="setlist-chords-v1";
+let CH={}; try{CH=JSON.parse(localStorage.getItem(CHORD_KEY))||{}}catch(e){CH={}}
+function saveChords(){try{localStorage.setItem(CHORD_KEY,JSON.stringify(CH));return true}catch(e){return false}}
+const SHARP=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"], FLAT=["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"];
+const IDX={C:0,"B#":0,"C#":1,Db:1,D:2,"D#":3,Eb:3,E:4,Fb:4,F:5,"E#":5,"F#":6,Gb:6,G:7,"G#":8,Ab:8,A:9,"A#":10,Bb:10,B:11,Cb:11};
+// root, quality/extensions, optional slash bass; strict so ordinary words are left alone
+const CHORD_RE=/^([A-G][#b]?)((?:maj|min|m|M|dim|aug|sus|add|\+|°|ø)?(?:[0-9]+)?(?:(?:maj|sus|add|b|#|\+|-)?[0-9]+)*(?:\([^)\s]*\))?)(?:\/([A-G][#b]?))?$/;
+const parseChord=tok=>{const m=CHORD_RE.exec(tok);return m?{root:m[1],q:m[2],bass:m[3]}:null};
+const isMinorQ=q=>/^m(?!aj)|^min/.test(q);
+function coreOf(tok){
+  const m=/^([(\[|]*)(.*?)([)\]|,.]*)$/.exec(tok); if(!m)return ["",tok,""];
+  let [,pre,core,suf]=m;
+  if(core.includes("(")&&!core.includes(")")&&suf[0]===")"){core+=")";suf=suf.slice(1)} // keep E7(b9) whole
+  return [pre,core,suf];
+}
+function firstChord(text){
+  for(const line of text.split("\n"))for(const tok of line.split(/\s+/)){const c=parseChord(coreOf(tok)[1]);if(c)return c}
+  return null;
+}
+function useFlats(rootIdx,minor){return minor?[2,7,0,5,10,3].includes(rootIdx):[5,10,3,8,1,6].includes(rootIdx)}
+function shiftNote(n,off,flats){return (flats?FLAT:SHARP)[(IDX[n]+off+120)%12]}
+function keyOf(text,off){
+  const c=firstChord(text); if(!c)return "";
+  const minor=isMinorQ(c.q), idx=(IDX[c.root]+off+120)%12;
+  return (off?(useFlats(idx,minor)?FLAT:SHARP)[idx]:c.root)+(minor?"m":"");
+}
+function chordInfo(title){const e=CH[title]||{};return {text:e.text||"",off:e.off||0,key:e.text?keyOf(e.text,e.off||0):""}}
+// HTML with chords transposed + highlighted; keeps column alignment by trimming/padding the following spaces
+function renderSheet(text,off){
+  const c=firstChord(text);
+  let flats=false; if(c){const idx=(IDX[c.root]+off+120)%12;flats=useFlats(idx,isMinorQ(c.q))}
+  return text.split("\n").map(line=>{
+    const parts=line.split(/(\s+)/); let debt=0, out="";
+    for(let i=0;i<parts.length;i++){
+      let s=parts[i];
+      if(i%2===1){
+        if(debt>0){const take=Math.min(debt,s.length-1);s=s.slice(take);debt-=take}
+        else if(debt<0){s+=" ".repeat(-debt);debt=0}
+        out+=s;continue;
+      }
+      if(!s)continue;
+      const [pre,core,suf]=coreOf(s), ch=parseChord(core);
+      if(!ch){out+=esc(s);continue}
+      const nc=off?shiftNote(ch.root,off,flats)+ch.q+(ch.bass?"/"+shiftNote(ch.bass,off,flats):""):core;
+      debt+=nc.length-core.length;
+      out+=esc(pre)+'<span class="ch">'+esc(nc)+'</span>'+esc(suf);
+    }
+    return out;
+  }).join("\n");
+}
+const cd=document.getElementById("cd");
+let cdSong=null, cdEditing=false;
+function openChords(i){cdSong=ROUNDS[cur].songs[i];cdEditing=false;drawChords();if(!cd.open)cd.showModal()}
+function drawChords(){
+  const [t,a,b]=cdSong, info=chordInfo(t);
+  document.getElementById("cdTitle").textContent=t;
+  document.getElementById("cdSub").textContent=a+" · "+b+" BPM";
+  const body=document.getElementById("cdBody"), foot=document.getElementById("cdFoot");
+  document.getElementById("cdKey").hidden=cdEditing||!info.text;
+  document.getElementById("keyName").textContent=info.key||"–";
+  document.getElementById("keyOff").textContent=info.off?(info.off>0?"+":"")+info.off:"";
+  document.getElementById("tpReset").disabled=!info.off;
+  const q=encodeURIComponent("คอร์ด "+t+" "+a);
+  const search=`<a class="btn" href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener noreferrer">ค้นหาคอร์ดเพลงนี้ ↗</a>`;
+  if(cdEditing){
+    body.innerHTML=`<textarea id="cdText" spellcheck="false" placeholder="วางคอร์ดที่นี่ เช่น&#10;Am  F  C  G&#10;หรือวางเนื้อเพลงที่มีคอร์ดอยู่บรรทัดบน"></textarea>`;
+    const ta=document.getElementById("cdText"); ta.value=info.text; setTimeout(()=>ta.focus(),0);
+    foot.innerHTML=`<span class="grp">${search}</span><span class="grp">${info.text?'<button class="btn" id="cdCancel" type="button">ยกเลิก</button>':""}<button class="btn primary" id="cdSave" type="button">บันทึก</button></span>`;
+    document.getElementById("cdSave").onclick=()=>{
+      const v=ta.value.replace(/\s+$/,"");
+      if(v)CH[t]={text:v,off:(CH[t]&&CH[t].text===v)?CH[t].off||0:0}; else delete CH[t];
+      saveChords(); cdEditing=false; drawChords(); render();
+    };
+    const c=document.getElementById("cdCancel"); if(c)c.onclick=()=>{cdEditing=false;drawChords()};
+  }else if(!info.text){
+    body.innerHTML=`<div class="cd-empty">ยังไม่มีคอร์ดเพลงนี้ วางคอร์ดจากเว็บหรือพิมพ์เองได้ แล้วกด + / − เพื่อเปลี่ยนคีย์<div class="row"><button class="btn primary" id="cdAdd" type="button">วางคอร์ด</button>${search}</div></div>`;
+    foot.innerHTML="";
+    document.getElementById("cdAdd").onclick=()=>{cdEditing=true;drawChords()};
+  }else{
+    body.innerHTML=`<pre class="sheet">${renderSheet(info.text,info.off)}</pre>`;
+    foot.innerHTML=`<span class="grp">${search}</span><span class="grp"><button class="btn" id="cdEdit" type="button">แก้ไขคอร์ด</button></span>`;
+    document.getElementById("cdEdit").onclick=()=>{cdEditing=true;drawChords()};
+  }
+}
+function transpose(d){
+  const t=cdSong[0]; if(!CH[t]||!CH[t].text)return;
+  let o=(CH[t].off||0)+d; if(o>11)o-=12; if(o<-11)o+=12;
+  CH[t].off=o; saveChords(); drawChords(); render();
+}
+document.getElementById("tpUp").onclick=()=>transpose(1);
+document.getElementById("tpDown").onclick=()=>transpose(-1);
+document.getElementById("tpReset").onclick=()=>{const t=cdSong[0];if(CH[t]){CH[t].off=0;saveChords();drawChords();render()}};
+document.getElementById("cdClose").onclick=()=>cd.close();
+cd.addEventListener("click",e=>{if(e.target===cd)cd.close()});
+cd.addEventListener("close",()=>{cdEditing=false});
+
+render();
+document.getElementById("editBtn").hidden=false;
+
+</script>
+</body></html>
